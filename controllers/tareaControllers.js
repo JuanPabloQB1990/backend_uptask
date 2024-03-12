@@ -19,6 +19,10 @@ export const agregarTarea = async (req, res) => {
 
   try {
     const tareaAlmacenada = await Tarea.create(req.body);
+    // almacenar id del proyecto
+    existeProyecto.tareas.push(tareaAlmacenada._id);
+    await existeProyecto.save();
+    
     res.json(tareaAlmacenada);
   } catch (error) {
     console.log(error);
@@ -45,7 +49,7 @@ export const obtenerTarea = async (req, res) => {
 
 export const actualizarTarea = async(req, res) => {
   const { id } = req.params;
-
+  console.log(id);
   const tarea = await Tarea.findById(id).populate("proyecto");
 
   if (!tarea) {

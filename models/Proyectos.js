@@ -11,6 +11,10 @@ const proyectosSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+    fechaEntrega: {
+        type: Date,
+        required: true
+    },
     cliente: {
         type: String,
         required: true,
@@ -20,6 +24,12 @@ const proyectosSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Usuario'
     },
+    tareas: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tarea'
+        }
+    ],
     colaboradores: [
         {
             type: mongoose.Schema.Types.ObjectId,
