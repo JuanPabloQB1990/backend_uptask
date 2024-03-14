@@ -49,7 +49,7 @@ export const obtenerTarea = async (req, res) => {
 
 export const actualizarTarea = async(req, res) => {
   const { id } = req.params;
-  console.log(id);
+  
   const tarea = await Tarea.findById(id).populate("proyecto");
 
   if (!tarea) {
@@ -91,13 +91,36 @@ export const eliminarTarea = async(req, res) => {
     }
 
     try {
-        await tarea.deleteOne()
+        const proyecto = await Proyecto.findById(tarea.proyecto)
+        proyecto.tareas.pull(tarea._id)
+
+        // eliminar tarea y las tarea del proyecto al mismo tiempo
+        await Promise.allSettled([await tarea.deleteOne(), await tarea.deleteOne(), await proyecto.save()])
+        
         res.json({msg: "Tarea eliminada"})
     } catch (error) {
         console.log(error);
     }
 };
 
-export const cambiarEstado = (req, res) => {
-    
+export const cambiarEstado = async(req, res) => {
+  const { id } = req.params;
+
+  const tarea = await Tarea.findById(id).populate("proyecto");
+
+  if (!tarea) {
+    const error = new Error("La tarea no existe");
+    return res.status(404).json({ msg: error.msg });
+  }
+
+  if (tarea.proyecto.creador.toString() !== req.usuario._id.toString()  && !tarea.proyecto.colaboradores.some(colaborador => colaborador._id.toString() === req.usuario._id.toString())) {
+    const error = new Error("Accion no valida");
+    return res.status(403).json({ msg: error.message });
+  }
+
+  tarea.estado = !tarea.estado
+  await tarea.save()
+  res.json(tarea)
+
+
 };
