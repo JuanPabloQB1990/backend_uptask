@@ -5,8 +5,6 @@ export const agregarTarea = async (req, res) => {
   const { proyecto } = req.body;
   const existeProyecto = await Proyecto.findById(proyecto);
 
-  console.log(existeProyecto);
-
   if (!existeProyecto) {
     const error = new Error("El proyecto no existe");
     return res.status(404).json({ msg: error.msg });
@@ -95,7 +93,7 @@ export const eliminarTarea = async(req, res) => {
         proyecto.tareas.pull(tarea._id)
 
         // eliminar tarea y las tarea del proyecto al mismo tiempo
-        await Promise.allSettled([await tarea.deleteOne(), await tarea.deleteOne(), await proyecto.save()])
+        await Promise.allSettled([await tarea.deleteOne(), await proyecto.save()])
         
         res.json({msg: "Tarea eliminada"})
     } catch (error) {
@@ -106,7 +104,7 @@ export const eliminarTarea = async(req, res) => {
 export const cambiarEstado = async(req, res) => {
   const { id } = req.params;
 
-  const tarea = await Tarea.findById(id).populate("proyecto");
+  const tarea = await Tarea.findById(id).populate("proyecto").populate("completado");
 
   if (!tarea) {
     const error = new Error("La tarea no existe");
@@ -119,8 +117,12 @@ export const cambiarEstado = async(req, res) => {
   }
 
   tarea.estado = !tarea.estado
+  tarea.completado = req.usuario._id
   await tarea.save()
-  res.json(tarea)
+
+  const tareaAlmacenada = await Tarea.findById(id).populate("proyecto").populate("completado");
+
+  res.json(tareaAlmacenada)
 
 
 };
