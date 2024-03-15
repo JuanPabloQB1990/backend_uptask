@@ -13,7 +13,7 @@ export const emailRegistro = async (datos) => {
   });
 
   const info = await transport.sendMail({
-    from: '"UpTask - Administrador de Proyectos" uptask@example.com',
+    from: process.env.EMAIL_USER,
     to: email,
     subject: "Bienvenido a Uptask - Comprueba tu Cuenta",
     text: `Comprueba tu cuenta`,
@@ -22,6 +22,8 @@ export const emailRegistro = async (datos) => {
                 <p>Si tu no creaste esta cuenta, puedes ignorar el mensaje</p>
         `,
   });
+
+  console.log(info);
 };
 
 export const emailOlvidePassord = async (datos) => {
