@@ -11,11 +11,6 @@ export const obtenerProyectos = async(req, res) => {
     ]
   }).select('-tareas')
   
-  if (proyectos.length === 0) {
-    const error = new Error("No hay Proyectos")
-    return res.status(404).json({msg: error.message})
-  }
-  
   res.json(proyectos)
 }
 
