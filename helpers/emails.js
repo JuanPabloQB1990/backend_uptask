@@ -39,7 +39,7 @@ export const emailOlvidePassord = async (datos) => {
   });
 
   const info = await transport.sendMail({
-    from: '"UpTask - Administrador de Proyectos" uptask@example.com',
+    from: process.env.EMAIL_USER,
     to: email,
     subject: "Bienvenido a Uptask - Recupera tu password",
     text: `Comprueba tu cuenta`,
